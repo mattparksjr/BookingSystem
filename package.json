@@ -1,0 +1,19 @@
+{
+  "name": "empapi",
+  "version": "0.0.1",
+  "description": "The API backend for the Employee Software",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Matthew Parks",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.0",
+    "dotenv": "^16.0.0",
+    "express": "^4.18.1",
+    "mongoose": "^6.3.2",
+    "morgan": "^1.10.0"
+  }
+}

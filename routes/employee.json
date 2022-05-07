@@ -1,0 +1,25 @@
+[
+    {
+      "id": 1,
+      "name": "John Doe",
+      "address": "",
+      "phone": "",
+      "email": "",
+      "pay_type": "",
+      "birthdate": "",
+      "marital_status": "",
+      "job_title": "",
+      "department": "",
+      "supervisor": "",
+      "work_location": "",
+      "work_email": "",
+      "work_number": "",
+      "start_date": "",
+      "emergency_name": "",
+      "emergency_address": "",
+      "emergency_phone": "",
+      "emergency_relationship": "",
+      "pay_rate": 12.25,
+      "pay_yearly": 100000
+    }
+]
