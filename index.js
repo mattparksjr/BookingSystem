@@ -4,8 +4,9 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const logger = require("morgan");
 const path = require("path");
+const fs = require("fs");
+const db = require("./queries.js");
 const app = express();
-const mongoose = require("mongoose");
 
 const PORT = process.env.PORT || 3000;
 const NODE_ENV = process.env.NODE_ENV || "development";
@@ -16,6 +17,9 @@ app.set("env", NODE_ENV);
 
 app.use(logger("tiny"));
 app.use(bodyParser.json());
+
+const toRun = fs.readFileSync("setup.sql").toString();
+db.query(toRun);
 
 // Each route is added here
 app.use("/", require(path.join(__dirname, "routes/stats")));

@@ -1,29 +1,20 @@
-//GET Method
+// Imports
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
-
 const router = express.Router();
+const db = require('../queries.js');
 
-const getStats = async (req, res, next) => {
+// Get an employees info
+const getEmployee = async (req, res, next) => {
     try {
-        const data = fs.readFileSync(path.join(__dirname, "./stats.json"));
-        const stats = JSON.parse(data);
-        const playerStats = stats.find(
-            (player) => player.id === Number(req.params.id)
-        );
-        if (!playerStats) {
-            const err = new Error("Player stats not found");
-            err.status = 404;
-            throw err;
-        }
-        res.json(playerStats);
+        db.getUserById(req, res);
     } catch (e) {
-        next(e);
+        next(e)
     }
 };
 
-router.route("/api/v1/stats/:id").get(getStats);
+router.route("/api/v1/employee/:id").get(getEmployee);
 
 module.exports = router;
 
@@ -82,8 +73,6 @@ const updateStats = async (req, res, next) => {
     }
 };
 
-router.route("/api/v1/stats/:id").get(getStats).put(updateStats);
-
 //DELETE Method
 const deleteStats = async (req, res, next) => {
     try {
@@ -115,6 +104,5 @@ const deleteStats = async (req, res, next) => {
 
 router
     .route("/api/v1/employee/:id")
-    .get(getStats)
     .put(updateStats)
     .delete(deleteStats);
