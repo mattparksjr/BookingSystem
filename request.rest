@@ -1,0 +1,21 @@
+GET http://localhost:8080/tshirt/
+
+###
+
+POST http://localhost:8080/users
+Content-Type: application/json
+
+{
+    "id": 1,
+    "password": "admin"
+}
+
+###
+
+POST http://localhost:8080/users/login
+Content-Type: application/json
+
+{
+    "id": 1,
+    "password": "123"
+}

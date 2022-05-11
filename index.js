@@ -1,54 +1,87 @@
-require('dotenv').config();
+require('dotenv').config()
+const express = require('express')
+const app = express()
+const PORT = 8080;
+const bcrypt = require('bcrypt')
 
-const express = require("express");
-const bodyParser = require("body-parser");
-const logger = require("morgan");
-const path = require("path");
-const fs = require("fs");
-const db = require("./queries.js");
-const app = express();
+const { MongoClient } = require('mongodb');
 
-const PORT = process.env.PORT || 3000;
-const NODE_ENV = process.env.NODE_ENV || "development";
+const url = `mongodb://${process.env.USER}:${process.env.PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/`
+const client = new MongoClient(url)
+const dbName = "booking"
+async function main() {
+    // Use connect method to connect to the server
+    await client.connect();
+    console.log('Connected successfully to server');
+    const db = client.db(dbName);
+    const collection = db.collection('users');
+  
+    const insertResult = await collection.insertMany([{ a: 1 }, { a: 2 }, { a: 3 }]);
+    console.log('Inserted documents =>', insertResult);
+  
+    return 'done.';
+}
 
-// App Setup
-app.set("port", PORT);
-app.set("env", NODE_ENV);
+main()
+.then(console.log)
+.catch(console.error)
+.finally(() => client.close());
 
-app.use(logger("tiny"));
-app.use(bodyParser.json());
+app.use(express.json())
 
-const toRun = fs.readFileSync("setup.sql").toString();
-db.query(toRun);
+const users = []
 
-// Each route is added here
-app.use("/", require(path.join(__dirname, "routes/stats")));
-app.use("/", require(path.join(__dirname, "routes/employee")));
+app.post('/users', async (req, res) => {
+    try {
+        const hashedPassword = await bcrypt.hash(req.body.password, 10)
+        const user = { name: req.body.name, password: hashedPassword }
+        users.push(user)
+        res.status(201).send()
+    } catch (e) {
+        res.status(500).send()
+    }
+})
 
-// Default error handler for 404
-app.use((req, res, next) => {
-    const err = new Error(`${req.method} ${req.url} Not Found`);
-    err.status = 404;
-    next(err);
-});
+app.post('/users/login', async (req, res) => {
+    const user = users.find(user => user.id = req.body.id)
+    if(user == null) {
+        return res.status(400).send('Cannot find user')
+    }
 
-// If we cannot return a 404, e.g. path found, server not working
-// return a 500 error
-app.use((err, req, res, next) => {
-    console.error(err);
-    res.status(err.status || 500);
-    res.json({
-        error: {
-            message: err.message,
-        },
+    try {
+        if(await bcrypt.compare(req.body.password, user.password)) {
+            res.send('Correct')
+        } else {
+            res.send('Not Allowed')
+        }
+    } catch(e) {
+        res.status(500).send()
+    }
+})
+
+app.get('/tshirt', (req, res) => {
+    res.status(200).send({
+        tshirt: '👕',
+        size: 'large'
     });
-});
+})
 
-// Run the app
-app.listen(PORT, () => {
-    console.log(
-        `Express Server started on Port ${app.get(
-            "port"
-        )} | Environment: ${app.get("env")}`
-    );
-});
+app.post('/tshirt/:id', (req, res) => {
+
+    const { id } = req.params;
+    const { logo } = req.body;
+
+    if(!logo) {
+        res.status(418).send({ message: 'We need a logo!'
+        });
+    }
+
+    res.status(200).send({
+        tshirt: `👕 with your ${logo} and ID of ${id}`,
+    });
+})
+
+app.listen(
+    PORT,
+    () => console.log(`it's alive on http://localhost:${PORT}`)
+)
