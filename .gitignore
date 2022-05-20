@@ -1,2 +1,7 @@
 .env
 node_modules/
+/frontend/public/build/
+/frontend/dist/
+
+.DS_Store
+*.exe
