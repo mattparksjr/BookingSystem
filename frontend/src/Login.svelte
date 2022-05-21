@@ -1,15 +1,55 @@
 <script>
+
+    import { token } from './stores';
+
     let username;
     let password;
-    let error;
-    let current;
-    let hide = true;
+    let hasError = false;
+    let errorText;
 
-    function submit() {
-        if(username === null) {
-            error.innerHTML = "Error: You need to provide a username.";
-            hide = false;
+    async function submit(e) {
+        // This prevents the page from reloading, causing a headache for debugging
+        e.preventDefault();
+
+        if(username === undefined) {
+            errorText = "Error: You need to provide a username.";
+            hasError = true;
+            return;
         }
+
+        if(password === undefined) {
+            errorText = "Error: You need to provide a password.";
+            hasError = true;
+            return;
+        }
+
+        var dat = new Object();
+        dat.email = username;
+        dat.password = password;
+
+        var req = await fetch(APIURL + "/api/v1/auth/admin/login/", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dat) 
+        });
+        
+        if(req.status === 404 || req.status === 403) {
+            errorText = "Error: Invalid login.";
+            hasError = true;
+            return;
+        }
+
+        if(req.status === 200) {
+            var res = await req.json();
+            token.update(token => res.token);
+            return;
+        } else {
+            errorText = "Error: Requested failed from server.";
+            hasError = true;
+            return;
+        }        
     }
 </script>
 
@@ -22,7 +62,9 @@
     <section id="form">
         <form id="login" on:submit="{submit}">
             <h1>Login</h1>
-            <p class:hide="{current === 'foo'}" id="error" bind:this={error}>Error: This is a test error</p>
+            {#if hasError}
+                <p id="error">{errorText}</p>
+            {/if}
             <input bind:value={username} type="text" placeholder="Username...">
             <input bind:value={password} type="password" placeholder="Password...">
             <input type="submit">

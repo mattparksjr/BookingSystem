@@ -4,6 +4,11 @@ import resolve from '@rollup/plugin-node-resolve';
 import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
 import css from 'rollup-plugin-css-only';
+import replace from '@rollup/plugin-replace';
+import dotenv from 'dotenv';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+
+dotenv.config();
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -37,6 +42,11 @@ export default {
 		file: 'public/build/bundle.js'
 	},
 	plugins: [
+		replace({
+			APIURL: JSON.stringify(process.env.APIURL),
+			preventAssignment: true
+		}),
+
 		svelte({
 			compilerOptions: {
 				// enable run-time checks when not in production
@@ -57,6 +67,7 @@ export default {
 			dedupe: ['svelte']
 		}),
 		commonjs(),
+		nodeResolve(),
 
 		// In dev mode, call `npm run start` once
 		// the bundle has been generated

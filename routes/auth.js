@@ -12,7 +12,7 @@ const { isProd } = require('../util')
  * @version 1.0.0
 ******************************************/
 
-router.get('/admin/login', async (req, res) => {
+router.post('/admin/login', async (req, res) => {
     // Make sure we have all of the needed info!
     if(!req.body.email || !req.body.password) {
         return res.status(400).json({error: "Invalid Request."})
