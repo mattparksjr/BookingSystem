@@ -27,13 +27,19 @@
         dat.email = username;
         dat.password = password;
 
-        var req = await fetch(APIURL + "/api/v1/auth/admin/login/", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(dat) 
-        });
+        try {
+            var req = await fetch(APIURL + "/api/v1/auth/admin/login/", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(dat) 
+            });
+        } catch(e) {
+            errorText = "Error: Failed to connect to server.";
+            hasError = true;
+            return;
+        }
         
         if(req.status === 404 || req.status === 403) {
             errorText = "Error: Invalid login.";
@@ -44,6 +50,7 @@
         if(req.status === 200) {
             var res = await req.json();
             token.update(token => res.token);
+            
             return;
         } else {
             errorText = "Error: Requested failed from server.";

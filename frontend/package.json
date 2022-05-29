@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "dotenv": "^16.0.1",
+    "page": "^1.11.6",
     "sirv-cli": "^2.0.0"
   }
 }

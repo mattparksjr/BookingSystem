@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const Admin = require('../models/admin')
+const Admin = require('../models/employee')
 const bcrypt = require('bcrypt')
 const db = require('../db')
 const jwt = require('jsonwebtoken')
@@ -12,14 +12,14 @@ const { isProd } = require('../util')
  * @version 1.0.0
 ******************************************/
 
-router.post('/admin/login', async (req, res) => {
+router.post('/login', async (req, res) => {
     // Make sure we have all of the needed info!
     if(!req.body.email || !req.body.password) {
         return res.status(400).json({error: "Invalid Request."})
     }
 
     // Find the matching admin login, return auth token
-    db.db.collection('admins').findOne({email: req.body.email})
+    db.db.collection('employees').findOne({email: req.body.email})
     .then(user => {
         if(!user) {
             return res.status(404).json({error: "User does not exist."})
@@ -41,7 +41,7 @@ router.post('/admin/login', async (req, res) => {
     })
 });
 
-router.post('/admin/signup', middleware.verify, async (req, res) => {
+router.post('/signup', middleware.verify, async (req, res) => {
 
     // Make sure we have all of the needed info!
     if(!req.body.email || !req.body.password || !req.body.name || !req.body.role) {

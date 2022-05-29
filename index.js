@@ -2,17 +2,19 @@ require('dotenv').config()
 const express = require('express')
 const app = express()
 const PORT = 8080;
-const bcrypt = require('bcrypt')
 const cors = require('cors');
 const helmet = require('helmet');
 const authRoute = require('./routes/auth');
 
+// Addons
 app.use(express.json())
 app.use(helmet())
 app.use(cors())
 
+// Routes
 app.use("/api/v1/auth", authRoute)
 
+// TODO: Remove? do we need?
 app.post('/tshirt/:id', (req, res) => {
 
     const { id } = req.params;
